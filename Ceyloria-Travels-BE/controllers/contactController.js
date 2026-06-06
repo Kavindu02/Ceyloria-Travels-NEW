@@ -1,0 +1,316 @@
+const nodemailer = require("nodemailer");
+const Contact = require("../models/Contact.js");
+
+const hasEmailConfig = Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+
+const transporter = hasEmailConfig
+  ? nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // Use TLS
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    })
+  : null;
+
+const safeSendMail = async (mailOptions, contextLabel = "mail") => {
+  if (!hasEmailConfig || !transporter) {
+    console.warn(`[${contextLabel}] EMAIL_USER/EMAIL_PASS not configured. Skipping email send.`);
+    return { sent: false, skipped: true };
+  }
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return { sent: true };
+  } catch (error) {
+    console.error(`[${contextLabel}] sendMail failed:`, error.message || error);
+    return { sent: false, skipped: false, error };
+  }
+};
+
+exports.sendContactMail = async (req, res) => {
+  const {
+    name,
+    email,
+    country,
+    phone,
+    adults,
+    kids,
+    infants,
+    arrivalDate,
+    departureDate,
+    message,
+  } = req.body;
+
+  if (
+    !name ||
+    !email ||
+    !country ||
+    !phone ||
+    !arrivalDate ||
+    !departureDate ||
+    !message
+  ) {
+    return res.status(400).json({ message: "Required fields missing" });
+  }
+
+  try {
+    // 1️⃣ Save to DB
+    await Contact.create({
+      name,
+      email,
+      country,
+      phone,
+      adults,
+      kids,
+      infants,
+      arrivalDate,
+      departureDate,
+      message,
+    });
+
+    // 2️⃣ EMAIL CONTENT (TEXT VERSION)
+    const textMessage = `
+New Travel Inquiry
+
+Name: ${name}
+Email: ${email}
+Country: ${country}
+Phone: ${phone}
+
+Adults: ${adults || 0}
+Kids: ${kids || 0}
+Infants: ${infants || 0}
+
+Arrival Date: ${arrivalDate}
+Departure Date: ${departureDate}
+
+Message:
+${message}
+    `;
+
+    // 3️⃣ EMAIL CONTENT (HTML VERSION)
+    const htmlMessage = `
+      <h2>New Travel Inquiry</h2>
+      <hr />
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Country:</strong> ${country}</p>
+      <p><strong>Phone:</strong> ${phone}</p>
+
+      <h3>Travel Details</h3>
+      <p><strong>Adults:</strong> ${adults || 0}</p>
+      <p><strong>Kids:</strong> ${kids || 0}</p>
+      <p><strong>Infants:</strong> ${infants || 0}</p>
+      <p><strong>Arrival Date:</strong> ${arrivalDate}</p>
+      <p><strong>Departure Date:</strong> ${departureDate}</p>
+
+      <h3>Message</h3>
+      <p>${message}</p>
+    `;
+
+    // 4️⃣ SEND EMAIL
+    await safeSendMail({
+      from: `"Travel Website" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
+      subject: "New Travel Inquiry",
+      text: textMessage,
+      html: htmlMessage,
+    }, "contact");
+
+    return res.json({ message: "Contact message sent successfully" });
+  } catch (error) {
+    console.error("Contact mail error:", error);
+    return res.status(500).json({ message: "Failed to send contact message" });
+  }
+};
+
+exports.sendPlanTripMail = async (req, res) => {
+  const data = req.body;
+
+  try {
+    const textMessage = `
+New Trip Plan Request
+
+Destination: ${data.destination}
+Travel Dates: ${data.travelDates?.start || 'Not Set'} to ${data.travelDates?.end || 'Not Set'} (Flexible: ${data.travelDates?.flexible ? 'Yes' : 'No'})
+Travelers: ${data.travelers?.adults || 0} Adults, ${data.travelers?.children || 0} Children, ${data.travelers?.infants || 0} Infants
+
+Budget Range: ${data.budgetRange || 'Not Set'}
+Accommodation: ${data.accommodationType || 'Not Set'}
+Pace: ${data.travelPace || 'Not Set'}
+
+Interests: ${(data.interests || []).join(", ") || 'None'}
+Occasion: ${data.occasion || 'None'}
+Dietary Requirements: ${data.dietaryReqs || 'None'}
+Transport: ${data.transportPref || 'None'}
+Message/Notes: ${data.message || 'None'}
+
+Contact:
+Name: ${data.fullName}
+Email: ${data.email}
+Phone/WhatsApp: ${data.phone || 'None'}
+    `;
+
+    const htmlMessage = `
+      <h2>New Trip Plan Request</h2>
+      <hr />
+      <h3>Trip Details</h3>
+      <p><strong>Destination:</strong> ${data.destination}</p>
+      <p><strong>Dates:</strong> ${data.travelDates?.start || 'Not Set'} to ${data.travelDates?.end || 'Not Set'} <em>(Flexible: ${data.travelDates?.flexible ? 'Yes' : 'No'})</em></p>
+      <p><strong>Travelers:</strong> ${data.travelers?.adults || 0} Adults, ${data.travelers?.children || 0} Children, ${data.travelers?.infants || 0} Infants</p>
+
+      <h3>Preferences</h3>
+      <p><strong>Budget Range:</strong> ${data.budgetRange || 'Not Set'}</p>
+      <p><strong>Accommodation:</strong> ${data.accommodationType || 'Not Set'}</p>
+      <p><strong>Travel Pace:</strong> ${data.travelPace || 'Not Set'}</p>
+
+      <h3>Style & Extras</h3>
+      <p><strong>Interests:</strong> ${(data.interests || []).join(", ") || 'None'}</p>
+      <p><strong>Occasion:</strong> ${data.occasion || 'None'}</p>
+      <p><strong>Dietary Requirements:</strong> ${data.dietaryReqs || 'None'}</p>
+      <p><strong>Transport Preference:</strong> ${data.transportPref || 'None'}</p>
+      <p><strong>Message / Notes:</strong> ${data.message || 'None'}</p>
+
+      <h3>Contact Information</h3>
+      <p><strong>Name:</strong> ${data.fullName}</p>
+      <p><strong>Email:</strong> ${data.email}</p>
+      <p><strong>Phone/WhatsApp:</strong> ${data.phone || 'None'}</p>
+    `;
+
+    await safeSendMail({
+      from: `"Travel Website" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
+      subject: `New Trip Plan Request from ${data.fullName}`,
+      text: textMessage,
+      html: htmlMessage,
+    }, "plan-trip");
+
+    return res.json({ message: "Trip plan request sent successfully" });
+  } catch (error) {
+    console.error("Trip plan mail error:", error);
+    return res.status(500).json({ message: "Failed to send trip plan details" });
+  }
+};
+
+exports.sendAccommodationBookingMail = async (req, res) => {
+  const {
+    accommodationName,
+    name,
+    contactNumber,
+    date,
+    boardType,
+  } = req.body;
+
+  if (!accommodationName || !name || !contactNumber || !date || !boardType) {
+    return res.status(400).json({ message: "Required fields missing" });
+  }
+
+  try {
+    const recipientEmail = "sandarudilshan24@gmail.com";
+
+    const textMessage = `
+New Accommodation Booking Inquiry
+
+Accommodation: ${accommodationName}
+Customer Name: ${name}
+Contact Number: ${contactNumber}
+Date: ${date}
+Board Type: ${boardType}
+    `;
+
+    const htmlMessage = `
+      <h2>New Accommodation Booking Inquiry</h2>
+      <hr />
+      <p><strong>Accommodation:</strong> ${accommodationName}</p>
+      <p><strong>Customer Name:</strong> ${name}</p>
+      <p><strong>Contact Number:</strong> ${contactNumber}</p>
+      <p><strong>Date:</strong> ${date}</p>
+      <p><strong>Board Type:</strong> ${boardType}</p>
+    `;
+
+    const mailResult = await safeSendMail({
+      from: `"Travel Website" <${process.env.EMAIL_USER}>`,
+      to: recipientEmail,
+      subject: `Accommodation Inquiry - ${accommodationName}`,
+      text: textMessage,
+      html: htmlMessage,
+    }, "accommodation-booking");
+
+    if (!mailResult.sent) {
+      return res.json({
+        message: "Accommodation inquiry received successfully",
+      });
+    }
+
+    return res.json({ message: "Accommodation inquiry sent successfully" });
+  } catch (error) {
+    console.error("Accommodation booking mail error:", error);
+    return res.status(500).json({ message: "Failed to send accommodation inquiry" });
+  }
+};
+
+exports.sendPackageBookingMail = async (req, res) => {
+  const {
+    packageName,
+    name,
+    contactNumber,
+    date,
+    adults,
+    kids,
+    infants,
+  } = req.body;
+
+  if (!packageName || !name || !contactNumber || !date) {
+    return res.status(400).json({ message: "Required fields missing" });
+  }
+
+  try {
+    const recipientEmail = "sandarudilshan24@gmail.com";
+
+    const textMessage = `
+New Package Booking Inquiry
+
+Package: ${packageName}
+Customer Name: ${name}
+Contact Number: ${contactNumber}
+Date: ${date}
+Adults: ${Number(adults) || 0}
+Kids: ${Number(kids) || 0}
+Infants: ${Number(infants) || 0}
+    `;
+
+    const htmlMessage = `
+      <h2>New Package Booking Inquiry</h2>
+      <hr />
+      <p><strong>Package:</strong> ${packageName}</p>
+      <p><strong>Customer Name:</strong> ${name}</p>
+      <p><strong>Contact Number:</strong> ${contactNumber}</p>
+      <p><strong>Date:</strong> ${date}</p>
+      <p><strong>Adults:</strong> ${Number(adults) || 0}</p>
+      <p><strong>Kids:</strong> ${Number(kids) || 0}</p>
+      <p><strong>Infants:</strong> ${Number(infants) || 0}</p>
+    `;
+
+    const mailResult = await safeSendMail({
+      from: `"Travel Website" <${process.env.EMAIL_USER}>`,
+      to: recipientEmail,
+      subject: `Package Inquiry - ${packageName}`,
+      text: textMessage,
+      html: htmlMessage,
+    }, "package-booking");
+
+    if (!mailResult.sent) {
+      return res.json({
+        message: "Package inquiry received successfully",
+      });
+    }
+
+    return res.json({ message: "Package inquiry sent successfully" });
+  } catch (error) {
+    console.error("Package booking mail error:", error);
+    return res.status(500).json({ message: "Failed to send package inquiry" });
+  }
+};
