@@ -104,7 +104,7 @@ export default function AddAdminPage() {
   return (
     <div className="flex flex-col items-center min-h-[90vh] pt-10 px-4 text-white">
 
-      <div className="w-full max-w-3xl mb-6">
+      <div className="w-full max-w-6xl mb-6">
         <Link
           to="/admin"
           className="text-slate-400 hover:text-white flex items-center gap-2 transition-colors font-medium"
@@ -113,10 +113,11 @@ export default function AddAdminPage() {
         </Link>
       </div>
 
-      {/* ============================
-          EXISTING ADMIN LIST
-      ============================= */}
-      <div className="w-full max-w-3xl mb-10 p-6 rounded-2xl bg-slate-900/50 border border-white/10">
+      <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        {/* ============================
+            EXISTING ADMIN LIST
+        ============================= */}
+        <div className="w-full p-6 rounded-2xl bg-slate-900/50 border border-white/10">
         <h2 className="text-xl font-bold mb-4">Existing Admins</h2>
 
         {loadingAdmins ? (
@@ -154,7 +155,7 @@ export default function AddAdminPage() {
       {/* ============================
           CREATE ADMIN FORM
       ============================= */}
-      <div className="w-full max-w-lg bg-slate-900/50 border border-white/10 backdrop-blur-md rounded-2xl p-8 shadow-2xl">
+      <div className="w-full bg-slate-900/50 border border-white/10 backdrop-blur-md rounded-2xl p-8 shadow-2xl">
         
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -199,9 +200,10 @@ export default function AddAdminPage() {
           </button>
         </form>
 
-        <Link to="/admin" className="block text-center mt-6 text-slate-400 hover:text-white transition-colors">
-          Back to Dashboard
-        </Link>
+          <Link to="/admin" className="block text-center mt-6 text-slate-400 hover:text-white transition-colors">
+            Back to Dashboard
+          </Link>
+        </div>
       </div>
     </div>
   );
