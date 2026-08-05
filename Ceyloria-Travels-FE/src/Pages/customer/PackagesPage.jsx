@@ -144,7 +144,7 @@ const PackagesPage = () => {
         durationStr.includes(`${selectedNights} night`) || 
         durationStr.includes(`${selectedNights}night`);
 
-      return matchesSearch && matchesDestination && matchesPrice && matchesDate && matchesDays && matchesNights;
+      return matchesSearch && matchesDestination && matchesPrice && matchesDate && matchesDays && matchesNights && !pkg.isPaused;
     });
   }, [packages, searchTerm, selectedDestination, priceRange, selectedDate, selectedDays, selectedNights]);
 

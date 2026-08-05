@@ -33,8 +33,8 @@ import WhatsAppButton from "./components/WhatsAppButton";
 export default function App() {
   const location = useLocation();
 
-  // Check if current route is admin panel
-  const isAdminRoute = location.pathname.startsWith("/admin");
+  // Check if current route is admin panel or login page
+  const hideLayout = location.pathname.startsWith("/admin") || location.pathname === "/login";
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -43,13 +43,13 @@ export default function App() {
       <Toaster />
 
       {/* Navbar — hidden on admin panel */}
-      {!isAdminRoute && <Navbar />}
+      {!hideLayout && <Navbar />}
 
       {/* Language Switcher */}
-      {!isAdminRoute && <LanguageSwitcher />}
+      {!hideLayout && <LanguageSwitcher />}
 
       {/* WhatsApp Button */}
-      {!isAdminRoute && <WhatsAppButton />}
+      {!hideLayout && <WhatsAppButton />}
 
       {/* Scroll to top instantly on route change */}
       <ScrollToTop />
@@ -82,7 +82,7 @@ export default function App() {
       </Routes>
 
       {/* Footer — hidden on admin panel */}
-      {!isAdminRoute && <Footer />}
+      {!hideLayout && <Footer />}
 
     </div>
   );

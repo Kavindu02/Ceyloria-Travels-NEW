@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-import { FaTrash, FaEdit } from "react-icons/fa";
+import { FaTrash, FaEdit, FaPause, FaPlay } from "react-icons/fa";
 import { safeParseJSON } from "../../utils/jsonParser.js";
 
 export default function PackageAdminPage() {
@@ -50,6 +50,25 @@ export default function PackageAdminPage() {
     } catch (err) {
       console.error(err);
       toast.error("Failed to delete package");
+    }
+  };
+
+  const handlePauseToggle = async (pkg) => {
+    try {
+      await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/packages/${pkg.id}`,
+        { isPaused: !pkg.isPaused },
+        axiosConfig
+      );
+      setPackages((prev) =>
+        prev.map((p) =>
+          p.id === pkg.id ? { ...p, isPaused: !p.isPaused } : p
+        )
+      );
+      toast.success(pkg.isPaused ? "Package unpaused successfully" : "Package paused successfully");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update package status");
     }
   };
 
@@ -110,6 +129,13 @@ export default function PackageAdminPage() {
                         >
                             <FaEdit />
                         </Link>
+                        <button
+                            onClick={() => handlePauseToggle(pkg)}
+                            className={`p-2 rounded-lg transition-colors ${pkg.isPaused ? 'bg-orange-600/20 text-orange-400 hover:bg-orange-600 hover:text-white' : 'bg-gray-600/20 text-gray-400 hover:bg-gray-600 hover:text-white'}`}
+                            title={pkg.isPaused ? "Unpause Package" : "Pause Package"}
+                        >
+                            {pkg.isPaused ? <FaPlay /> : <FaPause />}
+                        </button>
                         <button
                             onClick={() => handleDelete(pkg.id)}
                             className="p-2 bg-red-600/20 text-red-400 rounded-lg hover:bg-red-600 hover:text-white transition-colors"

@@ -53,6 +53,10 @@ const TravelPackage = sequelize.define('TravelPackage', {
   isCurated: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  isPaused: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   }
 }, {
   tableName: 'travel_packages',
