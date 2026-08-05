@@ -215,8 +215,8 @@ export default function Contact() {
                     <h2 className={`${fontHead} text-3xl md:text-4xl mb-8`}>Reach Out.</h2>
 
                     <div className="space-y-8">
-                      <div className="flex gap-6 group/item cursor-pointer">
-                        <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover/item:bg-[#c8007b] group-hover/item:border-[#c8007b] transition-all duration-500">
+                      <div className="flex items-center gap-6 group/item cursor-pointer">
+                        <div className="w-14 h-14 flex-shrink-0 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover/item:bg-[#c8007b] group-hover/item:border-[#c8007b] transition-all duration-500">
                           <MapPin size={24} className="text-cyan-400 group-hover/item:text-white" />
                         </div>
                         <div>
@@ -225,8 +225,8 @@ export default function Contact() {
                         </div>
                       </div>
 
-                      <div className="flex gap-6 group/item cursor-pointer">
-                        <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover/item:bg-[#c8007b] group-hover/item:border-[#c8007b] transition-all duration-500">
+                      <div className="flex items-center gap-6 group/item cursor-pointer">
+                        <div className="w-14 h-14 flex-shrink-0 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover/item:bg-[#c8007b] group-hover/item:border-[#c8007b] transition-all duration-500">
                           <Mail size={24} className="text-cyan-400 group-hover/item:text-white" />
                         </div>
                         <div>
@@ -235,8 +235,8 @@ export default function Contact() {
                         </div>
                       </div>
 
-                      <div className="flex gap-6 group/item cursor-pointer">
-                        <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover/item:bg-[#c8007b] group-hover/item:border-[#c8007b] transition-all duration-500">
+                      <div className="flex items-center gap-6 group/item cursor-pointer">
+                        <div className="w-14 h-14 flex-shrink-0 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover/item:bg-[#c8007b] group-hover/item:border-[#c8007b] transition-all duration-500">
                           <Phone size={24} className="text-cyan-400 group-hover/item:text-white" />
                         </div>
                         <div>

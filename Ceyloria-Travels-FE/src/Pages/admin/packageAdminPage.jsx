@@ -132,7 +132,6 @@ export default function PackageAdminPage() {
                         <button
                             onClick={() => handlePauseToggle(pkg)}
                             className={`p-2 rounded-lg transition-colors ${pkg.isPaused ? 'bg-orange-600/20 text-orange-400 hover:bg-orange-600 hover:text-white' : 'bg-gray-600/20 text-gray-400 hover:bg-gray-600 hover:text-white'}`}
-                            title={pkg.isPaused ? "Unpause Package" : "Pause Package"}
                         >
                             {pkg.isPaused ? <FaPlay /> : <FaPause />}
                         </button>

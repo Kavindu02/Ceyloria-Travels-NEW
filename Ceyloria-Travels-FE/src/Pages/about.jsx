@@ -166,9 +166,9 @@ const About = () => {
                   <h3 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h3>
                   <p className="text-gray-600 leading-relaxed text-lg">
                     At Ceyloria Travels, our mission is to craft exceptional travel experiences that reflect the unique
-spirit of Sri Lanka. We are committed to responsible tourism, local partnerships, and
-customer-focused service, ensuring every traveller discovers the island with comfort,
-authenticity, and care.
+                    spirit of Sri Lanka. We are committed to responsible tourism, local partnerships, and
+                    customer-focused service, ensuring every traveller discovers the island with comfort,
+                    authenticity, and care.
 
                   </p>
                 </div>
@@ -186,7 +186,7 @@ authenticity, and care.
                   <h3 className="text-3xl font-bold mb-6">Our Vision</h3>
                   <p className="text-neutral-400 leading-relaxed text-lg">
                     To be Sri Lanka’s leading travel partner, renowned for delivering unforgettable, personalised
-journeys that inspire meaningful connections with the island’s culture, nature, and people.
+                    journeys that inspire meaningful connections with the island’s culture, nature, and people.
                   </p>
                 </div>
               </div>
