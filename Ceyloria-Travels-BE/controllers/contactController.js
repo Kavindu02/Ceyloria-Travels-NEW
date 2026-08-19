@@ -113,8 +113,9 @@ ${message}
 
     // 4️⃣ SEND EMAIL
     await safeSendMail({
-      from: `"Travel Website" <${process.env.EMAIL_USER}>`,
+      from: `"Ceyloria Travels" <${process.env.EMAIL_USER}>`,
       to: process.env.EMAIL_USER,
+      replyTo: email,
       subject: "New Travel Inquiry",
       text: textMessage,
       html: htmlMessage,
@@ -181,8 +182,9 @@ Phone/WhatsApp: ${data.phone || 'None'}
     `;
 
     await safeSendMail({
-      from: `"Travel Website" <${process.env.EMAIL_USER}>`,
+      from: `"Ceyloria Travels" <${process.env.EMAIL_USER}>`,
       to: process.env.EMAIL_USER,
+      replyTo: data.email,
       subject: `New Trip Plan Request from ${data.fullName}`,
       text: textMessage,
       html: htmlMessage,
@@ -209,7 +211,6 @@ exports.sendAccommodationBookingMail = async (req, res) => {
   }
 
   try {
-    const recipientEmail = "sandarudilshan24@gmail.com";
 
     const textMessage = `
 New Accommodation Booking Inquiry
@@ -232,8 +233,8 @@ Board Type: ${boardType}
     `;
 
     const mailResult = await safeSendMail({
-      from: `"Travel Website" <${process.env.EMAIL_USER}>`,
-      to: recipientEmail,
+      from: `"Ceyloria Travels" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
       subject: `Accommodation Inquiry - ${accommodationName}`,
       text: textMessage,
       html: htmlMessage,
@@ -268,7 +269,6 @@ exports.sendPackageBookingMail = async (req, res) => {
   }
 
   try {
-    const recipientEmail = "sandarudilshan24@gmail.com";
 
     const textMessage = `
 New Package Booking Inquiry
@@ -295,8 +295,8 @@ Infants: ${Number(infants) || 0}
     `;
 
     const mailResult = await safeSendMail({
-      from: `"Travel Website" <${process.env.EMAIL_USER}>`,
-      to: recipientEmail,
+      from: `"Ceyloria Travels" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
       subject: `Package Inquiry - ${packageName}`,
       text: textMessage,
       html: htmlMessage,
